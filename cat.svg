@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#fff3e8"/>
+  <!-- body -->
+  <ellipse cx="200" cy="330" rx="110" ry="70" fill="#f2a65a"/>
+  <!-- head -->
+  <path d="M110 150 L120 70 L170 115 Z" fill="#f2a65a"/>
+  <path d="M290 150 L280 70 L230 115 Z" fill="#f2a65a"/>
+  <path d="M125 135 L130 90 L160 118 Z" fill="#ffc9b5"/>
+  <path d="M275 135 L270 90 L240 118 Z" fill="#ffc9b5"/>
+  <ellipse cx="200" cy="190" rx="105" ry="90" fill="#f2a65a"/>
+  <!-- stripes -->
+  <path d="M185 105 Q200 125 215 105" stroke="#d9863a" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M175 120 Q200 142 225 120" stroke="#d9863a" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <!-- detective hat -->
+  <ellipse cx="200" cy="110" rx="95" ry="16" fill="#6b4f3a"/>
+  <path d="M135 110 Q140 55 200 52 Q260 55 265 110 Z" fill="#7d5d44"/>
+  <rect x="137" y="92" width="126" height="12" fill="#3b2a1f"/>
+  <!-- one squinting eye -->
+  <path d="M140 185 Q160 175 180 185" stroke="#2b1d1a" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <path d="M142 172 L178 166" stroke="#2b1d1a" stroke-width="6" stroke-linecap="round"/>
+  <!-- big eye behind magnifier -->
+  <circle cx="255" cy="185" r="62" fill="#e9f6ff" stroke="#3b2a1f" stroke-width="10"/>
+  <circle cx="255" cy="185" r="30" fill="#fff"/>
+  <circle cx="258" cy="188" r="17" fill="#2b1d1a"/>
+  <circle cx="264" cy="181" r="6" fill="#fff"/>
+  <path d="M220 160 Q235 145 252 148" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round" opacity=".8"/>
+  <rect x="300" y="232" width="20" height="80" rx="8" fill="#3b2a1f" transform="rotate(-38 310 272)"/>
+  <!-- nose & mouth -->
+  <path d="M192 215 L208 215 L200 225 Z" fill="#e0707c"/>
+  <path d="M200 225 Q190 240 178 234 M200 225 Q210 240 222 234" stroke="#2b1d1a" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <!-- whiskers -->
+  <path d="M150 222 L100 214 M150 232 L102 238" stroke="#2b1d1a" stroke-width="3" stroke-linecap="round"/>
+  <!-- paw -->
+  <ellipse cx="300" cy="300" rx="28" ry="22" fill="#f2a65a" stroke="#d9863a" stroke-width="3"/>
+</svg>
