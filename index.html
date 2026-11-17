@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Бронь свидания · 10 декабря</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Oswald:wght@700&family=Unbounded:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{ --bg:#04060c; --card:rgba(10,20,34,.72); --line:rgba(56,232,255,.28); --text:#e8fbff; --muted:#86a9b8;
@@ -140,7 +141,7 @@
   #film{position:fixed; inset:0; z-index:20; background:#02040a; overflow:hidden}
   #film > * + *{margin-top:0}
   #fcv{position:absolute; inset:0; width:100%; height:100%; display:block}
-  .fhead{position:absolute; left:0; right:0; top:max(22px, env(safe-area-inset-top)); text-align:center; font-family:"Unbounded",sans-serif; font-weight:300; font-size:12px; letter-spacing:.42em; text-transform:uppercase; color:var(--accent); opacity:0; transition:opacity .8s; padding-left:.42em}
+  .fhead{position:absolute; left:0; right:0; top:max(22px, calc(var(--tg-content-safe-area-inset-top, 0px) + var(--tg-safe-area-inset-top, 0px) + 12px), env(safe-area-inset-top)); text-align:center; font-family:"Unbounded",sans-serif; font-weight:300; font-size:12px; letter-spacing:.42em; text-transform:uppercase; color:var(--accent); opacity:0; transition:opacity .8s; padding-left:.42em}
   .fhead.on{opacity:.85}
   .capt{position:absolute; left:18px; right:18px; bottom:16%; text-align:center; font-family:"Unbounded",sans-serif; font-weight:300; font-size:19px; letter-spacing:.16em; text-transform:uppercase; color:#fff; text-shadow:0 0 10px var(--accent), 0 0 26px rgba(56,232,255,.55); opacity:0; transform:translateY(8px); transition:opacity .7s ease, transform .7s ease; pointer-events:none; line-height:1.45}
   .capt.on{opacity:1; transform:none}
@@ -718,7 +719,9 @@
     else { save(); openDone(); }
   }
 
-  function save(){ try{ localStorage.setItem("dateBooking", JSON.stringify(answers)); }catch(e){} }
+  const TG = (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) ? window.Telegram.WebApp : null;
+  const cloudOK = () => TG && TG.CloudStorage && TG.isVersionAtLeast && TG.isVersionAtLeast("6.9");
+  function save(){ const v = JSON.stringify(answers); try{ localStorage.setItem("dateBooking", v); }catch(e){} try{ if (cloudOK()) TG.CloudStorage.setItem("dateBooking", v); }catch(e){} }
   function load(){ try{ return JSON.parse(localStorage.getItem("dateBooking")||"null"); }catch(e){ return null; } }
 
   function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
@@ -750,7 +753,7 @@
     }
   }
 
-  function restart(){ try{ localStorage.removeItem("dateBooking"); }catch(e){} $("copied").textContent=""; $("fallback").classList.add("hidden"); show("gate"); }
+  function restart(){ try{ localStorage.removeItem("dateBooking"); }catch(e){} try{ if (cloudOK()) TG.CloudStorage.removeItem("dateBooking"); }catch(e){} $("copied").textContent=""; $("fallback").classList.add("hidden"); show("gate"); }
 
   const pad = n => String(n).padStart(2,"0");
   function plural(n, a, b, c){ n = Math.abs(n)%100; const n1 = n%10; if (n>10 && n<20) return c; if (n1>1 && n1<5) return b; if (n1===1) return a; return c; }
@@ -817,8 +820,24 @@
   }
 
   // Если бронь уже сделана — сразу показываем таймер
+  if (TG){
+    try{ TG.ready(); TG.expand(); }catch(e){}
+    try{ TG.setHeaderColor("#02040a"); TG.setBackgroundColor("#02040a"); }catch(e){}
+    try{ if (TG.isVersionAtLeast("8.0") && TG.requestFullscreen) TG.requestFullscreen(); }catch(e){}
+    try{ if (TG.disableVerticalSwipes) TG.disableVerticalSwipes(); }catch(e){}
+    document.addEventListener("click", e => {
+      const a = e.target.closest && e.target.closest("a[href^='https://t.me/']");
+      if (a){ e.preventDefault(); try{ TG.openTelegramLink(a.href); }catch(_){ location.href = a.href; } }
+    }, true);
+  }
   const saved = load();
   if (saved){ answers = saved; openDone(); }
+  else if (cloudOK()){
+    show("gate");
+    try{ TG.CloudStorage.getItem("dateBooking", (err, v) => {
+      if (!err && v){ try{ answers = JSON.parse(v); localStorage.setItem("dateBooking", v); }catch(e){} if ($("gate") && !$("gate").classList.contains("hidden")) openDone(); }
+    }); }catch(e){}
+  }
   else { show("gate"); }
 </script>
 </body>
