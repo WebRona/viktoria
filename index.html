@@ -146,9 +146,9 @@
   #fcv{position:absolute; inset:0; width:100%; height:100%; display:block}
   .fhead{position:absolute; left:0; right:0; top:max(22px, calc(var(--tg-content-safe-area-inset-top, 0px) + var(--tg-safe-area-inset-top, 0px) + 12px), env(safe-area-inset-top)); text-align:center; font-family:"Unbounded",sans-serif; font-weight:300; font-size:12px; letter-spacing:.42em; text-transform:uppercase; color:var(--accent); opacity:0; transition:opacity .8s; padding-left:.42em}
   .fhead.on{opacity:.85}
-  .capt{position:absolute; left:18px; right:18px; bottom:16%; text-align:center; font-family:"Unbounded",sans-serif; font-weight:300; font-size:19px; letter-spacing:.16em; text-transform:uppercase; color:#fff; text-shadow:0 0 10px var(--accent), 0 0 26px rgba(56,232,255,.55); opacity:0; transform:translateY(8px); transition:opacity .7s ease, transform .7s ease; pointer-events:none; line-height:1.45}
+  .capt{position:absolute; left:14px; right:14px; overflow-wrap:anywhere; bottom:16%; text-align:center; font-family:"Unbounded",sans-serif; font-weight:300; font-size:19px; letter-spacing:.16em; text-transform:uppercase; color:#fff; text-shadow:0 0 10px var(--accent), 0 0 26px rgba(56,232,255,.55); opacity:0; transform:translateY(8px); transition:opacity .7s ease, transform .7s ease; pointer-events:none; line-height:1.45}
   .capt.on{opacity:1; transform:none}
-  .capt.big{font-size:clamp(24px,8vw,38px); font-weight:400; letter-spacing:.12em; bottom:auto; top:42%; text-shadow:0 0 12px #ff5fd2, 0 0 34px rgba(255,95,210,.65), 0 0 60px rgba(56,232,255,.4)}
+  .capt.big{font-size:clamp(19px,6.2vw,36px); font-weight:400; letter-spacing:.07em; bottom:auto; top:42%; text-shadow:0 0 12px #ff5fd2, 0 0 34px rgba(255,95,210,.65), 0 0 60px rgba(56,232,255,.4)}
   .tcap{position:absolute; left:18px; right:18px; bottom:max(28px, env(safe-area-inset-bottom)); text-align:center; opacity:0; transition:opacity .35s; pointer-events:none}
   .tcap b{display:block; font-family:"Unbounded",sans-serif; font-weight:400; font-size:17px; letter-spacing:.22em; padding-left:.22em; text-transform:uppercase; color:#ff5fd2; text-shadow:0 0 10px rgba(255,95,210,.6)}
   .tcap span{display:block; font-size:15px; color:var(--text); margin-top:6px}
@@ -184,7 +184,7 @@
   .h-replay{max-width:280px; margin:26px auto 0; font-size:12px; padding:13px}
   .h-scroll{position:absolute; bottom:max(18px, env(safe-area-inset-bottom)); left:0; right:0; text-align:center; font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--muted); z-index:2; animation:bob 2s ease-in-out infinite}
   @keyframes bob{50%{transform:translateY(5px)}}
-  #done > .ticket{margin-top:26px}
+  .h-reset{position:absolute; bottom:max(14px, env(safe-area-inset-bottom)); left:0; right:0; margin:auto; width:120px; background:none; border:0; color:rgba(134,169,184,.35); font:inherit; font-size:11px; letter-spacing:.2em; text-transform:uppercase; cursor:pointer; z-index:2}
 </style>
 </head>
 <body>
@@ -290,6 +290,25 @@
     </div>
   </section>
 
+  <section id="sendt" class="hidden">
+    <span class="tag">Бронь подтверждена ✅</span>
+    <h1>Остался последний шаг</h1>
+    <p>Отправь мне свой билет, и я начну готовиться. А потом здесь будет отсчёт до нашей встречи.</p>
+    <div class="card ticket" id="ticket">
+      <h2 class="h2">Твой билет</h2>
+      <div class="row"><span>Когда</span><span>10 декабря, 20:00</span></div>
+      <div class="row"><span>Где</span><span>Хошимин</span></div>
+      <div class="row"><span>Гость</span><span>самая нетерпеливая</span></div>
+      <div id="answersBox"></div>
+      <a class="btn" id="tgBtn" onclick="sentTicket()" href="https://t.me/Aksenovv" target="_blank" rel="noopener" style="text-align:center;text-decoration:none">Отправить билет Роме ✈</a>
+      <div class="hours small">Откроется чат со мной, останется нажать «Отправить»</div>
+      <div class="copied" id="copied"></div>
+      <pre id="fallback" class="hidden"></pre>
+    </div>
+
+    <button class="link" onclick="sentTicket(true)">Отправлю позже</button>
+  </section>
+
   <section id="done" class="hidden">
     <div class="hero">
       <canvas id="hcv"></canvas>
@@ -302,22 +321,9 @@
         <div id="hoursLine" class="h-alt">или <b id="th">0</b> часов · <b id="tm">0</b> минут</div>
         <button class="btn ghost h-replay" onclick="startFilm()">▶ Пересмотреть трейлер</button>
       </div>
-      <div class="h-scroll">Твой билет ↓</div>
+      <button class="h-reset" onclick="restart()">сбросить</button>
     </div>
 
-    <div class="card ticket" id="ticket">
-      <h2 class="h2">Твой билет</h2>
-      <div class="row"><span>Когда</span><span>10 декабря, 20:00</span></div>
-      <div class="row"><span>Где</span><span>Хошимин</span></div>
-      <div class="row"><span>Гость</span><span>самая нетерпеливая</span></div>
-      <div id="answersBox"></div>
-      <a class="btn" id="tgBtn" href="https://t.me/Aksenovv" target="_blank" rel="noopener" style="text-align:center;text-decoration:none">Отправить пожелания Роме в Telegram</a>
-      <div class="hours small">Откроется чат со мной, останется нажать «Отправить»</div>
-      <div class="copied" id="copied"></div>
-      <pre id="fallback" class="hidden"></pre>
-    </div>
-
-    <button class="link" onclick="restart()">Переиграть бронь</button>
   </section>
 
 </div>
@@ -691,7 +697,7 @@
   }
 
 
-  function show(id){ if (id!=="film" && id!=="gate") filmRun=false; ["gate","film","start","quiz","done"].forEach(s => $(s).classList.toggle("hidden", s!==id)); window.scrollTo(0,0); }
+  function show(id){ if (id!=="film" && id!=="gate") filmRun=false; ["gate","film","start","quiz","sendt","done"].forEach(s => $(s).classList.toggle("hidden", s!==id)); window.scrollTo(0,0); }
   function begin(){ i = 0; answers = {}; show("quiz"); renderQ(); }
 
   function renderQ(){
@@ -732,7 +738,7 @@
     if (it.free) answers[it.key] = $("wish").value.trim() || "сюрприз, сам догадайся";
     i++;
     if (i < QUESTIONS.length) renderQ();
-    else { save(); openDone(); }
+    else { save(); openTicket(); }
   }
 
   const TG = (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) ? window.Telegram.WebApp : null;
@@ -742,11 +748,21 @@
 
   function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 
-  function openDone(){
-    show("done");
+  function openTicket(){
+    show("sendt");
     $("answersBox").innerHTML = Object.entries(answers)
       .map(([k,v]) => `<div class="row"><span>${esc(k)}</span><span>${esc(v)}</span></div>`).join("");
     $("tgBtn").href = "https://t.me/Aksenovv?text=" + encodeURIComponent(summary());
+    window.scrollTo(0,0);
+  }
+  function sentTicket(later){
+    try{ localStorage.setItem("dateSent", "1"); }catch(e){}
+    try{ if (cloudOK()) TG.CloudStorage.setItem("dateSent", "1"); }catch(e){}
+    setTimeout(openDone, later ? 0 : 700);
+  }
+  function isSent(){ try{ return localStorage.getItem("dateSent") === "1"; }catch(e){ return false; } }
+  function openDone(){
+    show("done");
     tick(); clearInterval(window._t); window._t = setInterval(tick, 1000);
     window.scrollTo(0,0); heroFace();
   }
@@ -769,7 +785,7 @@
     }
   }
 
-  function restart(){ try{ localStorage.removeItem("dateBooking"); }catch(e){} try{ if (cloudOK()) TG.CloudStorage.removeItem("dateBooking"); }catch(e){} $("copied").textContent=""; $("fallback").classList.add("hidden"); show("gate"); }
+  function restart(){ try{ localStorage.removeItem("dateBooking"); localStorage.removeItem("dateSent"); }catch(e){} try{ if (cloudOK()){ TG.CloudStorage.removeItem("dateBooking"); TG.CloudStorage.removeItem("dateSent"); } }catch(e){} $("copied").textContent=""; $("fallback").classList.add("hidden"); show("gate"); }
 
   const pad = n => String(n).padStart(2,"0");
   function plural(n, a, b, c){ n = Math.abs(n)%100; const n1 = n%10; if (n>10 && n<20) return c; if (n1>1 && n1<5) return b; if (n1===1) return a; return c; }
@@ -847,11 +863,14 @@
     }, true);
   }
   const saved = load();
-  if (saved){ answers = saved; openDone(); }
+  if (saved){ answers = saved; isSent() ? openDone() : openTicket(); }
   else if (cloudOK()){
     show("gate");
-    try{ TG.CloudStorage.getItem("dateBooking", (err, v) => {
-      if (!err && v){ try{ answers = JSON.parse(v); localStorage.setItem("dateBooking", v); }catch(e){} if ($("gate") && !$("gate").classList.contains("hidden")) openDone(); }
+    try{ TG.CloudStorage.getItems(["dateBooking","dateSent"], (err, v) => {
+      if (!err && v && v.dateBooking){
+        try{ answers = JSON.parse(v.dateBooking); localStorage.setItem("dateBooking", v.dateBooking); if (v.dateSent) localStorage.setItem("dateSent", "1"); }catch(e){}
+        if ($("gate") && !$("gate").classList.contains("hidden")) (v.dateSent ? openDone() : openTicket());
+      }
     }); }catch(e){}
   }
   else { show("gate"); }
