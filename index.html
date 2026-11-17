@@ -420,6 +420,17 @@
     // ---------- captions
     const capt = $("capt"), head = $("fhead"), tcap = $("tcap");
     function caption(txt, big){ capt.classList.remove("on"); setTimeout(() => { capt.textContent = txt; capt.classList.toggle("big", !!big); if (txt) capt.classList.add("on"); }, txt ? 150 : 0); }
+    function dissolveCapt(){
+      const txt = capt.textContent; capt.innerHTML = "";
+      [...txt].forEach(ch => { const sp = document.createElement("span"); sp.textContent = ch; sp.style.display = "inline-block";
+        sp.style.transition = `transform ${1.2+Math.random()*.8}s cubic-bezier(.2,.6,.3,1), opacity 1.4s ease, filter 1.4s ease`; capt.appendChild(sp); });
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        capt.querySelectorAll("span").forEach(sp => { const a = Math.random()*Math.PI*2, d = 80 + Math.random()*220;
+          sp.style.transform = `translate(${Math.cos(a)*d}px, ${Math.sin(a)*d}px) rotate(${(Math.random()-.5)*180}deg) scale(${.3+Math.random()*.6})`;
+          sp.style.opacity = 0; sp.style.filter = "blur(6px)"; });
+      }));
+      setTimeout(() => { capt.classList.remove("on"); capt.innerHTML = ""; }, 2400);
+    }
     function setHead(txt){ head.classList.remove("on"); if (txt) setTimeout(() => { head.textContent = txt; head.classList.add("on"); }, 200); }
     function setCity(k){ tcap.style.opacity = 0; if (k < 0) return; setTimeout(() => { $("tcCity").textContent = ROUTE[k][0]; $("tcText").textContent = ROUTE[k][3]; tcap.style.opacity = 1; }, 160); }
 
@@ -462,7 +473,7 @@
     }
 
     // ---------- trip timeline (22.8 .. 43.2)
-    const T_TRIP = 22.8, T_TRIP_END = 43.2, STOP = 1.0;
+    const T_TRIP = 24.0, T_TRIP_END = 43.2, STOP = 1.0;
     const camT = CAM3, rp = ROUTE.map(r => M(r[1], r[2], camT));
     const segL = []; let tot = 0;
     for (let k=1;k<rp.length;k++){ const l = Math.hypot(rp[k][0]-rp[k-1][0], rp[k][1]-rp[k-1][1]); segL.push(l); tot += l; }
@@ -484,9 +495,9 @@
     const cues = [
       [4.4, () => caption("Он пересёк…")], [7.0, () => caption("…полмира")], [10.6, () => caption("")],
       [12.4, () => caption("Ради этой встречи")], [17.8, () => caption("")], [18.6, () => caption("С тобой", 1)],
-      [21.4, () => caption("")], [21.8, () => setHead("Что тебя ждёт")],
+      [20.8, () => caption("")], [21.3, () => caption("Что тебя ждёт…", 1)], [23.4, () => caption("")], [23.8, () => setHead("Что тебя ждёт")],
       [43.4, () => { setCity(-1); setHead(""); }], [43.55, () => caption("Ты готова к приключениям?", 1)],
-      [46.8, () => caption("")], [47.4, () => caption("С ним…")], [50.8, () => caption("")]
+      [46.8, () => caption("")], [47.4, () => caption("С ним…", 1)], [49.8, () => dissolveCapt()]
     ];
     let cueI = 0, shownStop = -1, titles = false, nextGlitch = 0;
     function glyph(g, ch, x, y, a, col, size, font){ g.globalAlpha = a; g.fillStyle = col; g.font = font || `bold ${size}px ui-monospace,Menlo,monospace`; g.fillText(ch, x, y); }
@@ -543,6 +554,8 @@
       let mapA = 0;
       if (t > 10.8 && t < 50.5){
         mapA = clamp((t-10.8)/1.2) * (1 - clamp((t-47.4)/1.2));
+        const mapDim = t < 18.2 ? 1 : (t < 23.4 ? 1 - .75*clamp((t-18.2)/.5) : .25 + .75*clamp((t-23.4)/.6));
+        mapA *= mapDim;
         const vnOn = clamp((t-13)/1.5), cam = camAt(t);
         ctx.font = "bold 10px ui-monospace,Menlo,monospace";
         for (const d of fine){ const p = mapPos(d, t); if (Math.random() < .03) d.ch = rg();
@@ -556,7 +569,7 @@
         }
         // HCM pin (15 .. 22)
         if (t > 15 && t < 22.8){
-          const p = M(...HCM, cam), pa = mapA*clamp((t-15)/.5)*(1-clamp((t-21.5)/1));
+          const p = M(...HCM, cam), pa = mapA*clamp((t-15)/.5)*(1-clamp((t-18)/.5));
           for (let k=0;k<3;k++){ const rr = ((t*40 + k*30) % 90); ctx.globalAlpha = pa*(1-rr/90); ctx.strokeStyle = "#ff5fd2"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(p[0], p[1], rr, 0, 6.283); ctx.stroke(); }
           glyph(ctx, "◉", p[0], p[1], pa, "#ff5fd2", 20);
           ctx.textAlign = "left";
